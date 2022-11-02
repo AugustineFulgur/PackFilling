@@ -14,20 +14,20 @@ DRIVER_LOG_HEAD_INTERCEPT="" #替代输出行首编写器
 
 #这里存放输入值，因为某些PATH包含的"会被命令行吃掉
 
-KEYS_PATH=['document.querySelector("#theForm > div > div.formContent > div.formInfo > div:nth-child(1) > input")','document.querySelector("#theForm > div > div.formContent > div.formInfo > div:nth-child(2) > input")'] #需要爆破的输入框的jsPath，可输入多个
-VALUES_PATH=["name_top.txt","pass_top.txt"] #对应的值，可为单个值或字典名，类型在type中指明
+KEYS_PATH=['',''] #需要爆破的输入框的jsPath，可输入多个
+VALUES_PATH=["",""] #对应的值，可为单个值或字典名，类型在type中指明
 VALUES_TYPE="11" #传入参数的类型拼接成的二进制，与传入的key一一对应，若为1则value值视为字典名，若不使用此项则视为所有值都为字典名，etc.value=[a,b.txt]，type="01"
-IDENTIFY_PATH=['document.querySelector("#vertify")','//*[@id="imgVerify"]'] #若需要识别验证码请使用此选项。传入[验证码输入框的jsPath,验证码图片的**XPATH**]，本脚本采用ddddocr进行识别
-SUBMIT_PATH='document.querySelector("#theForm > div > div.formContent > div.formInfo > div.formText.submitDiv > span > input")' #发起提交的元素id
+IDENTIFY_PATH=['',''] #若需要识别验证码请使用此选项。传入[验证码输入框的jsPath,验证码图片的**XPATH**]，本脚本采用ddddocr进行识别
+SUBMIT_PATH='' #发起提交的元素id
 SLEEP_INDICATE_PATH='' #等待的指示元素的XPATH，脚本将在此元素被加载之后执行下一步
 
 #存放其他设置
 
 PROXY="" #代理
-TARGET="https://yccd.duobashuzi.com/index.php/Admin/Admin/login" #目标路径
+TARGET="" #目标路径
 OUTFILE="out.csv" #输出文件路径
 SLEEP_TIME=10 #最长等待时间，建议设置得比较长
-INDICATE=['POST','/index.php?m=Admin&c=Admin'] #需要记录的请求包的特征值，默认情况下请填写[请求方法,请求URL关键词]
+INDICATE=['',''] #需要记录的请求包的特征值，默认情况下请填写[请求方法,请求URL关键词]
 
 #其他选项
 
