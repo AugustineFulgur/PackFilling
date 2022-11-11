@@ -16,6 +16,8 @@ import os
 import drivermodules
 import csv #写报告
 
+sys.path.append(SCRIPT) #引入脚本路径
+
 #配置开始 1
 PROG='''
 WpFilling
@@ -84,6 +86,10 @@ def import_function(target,function):
 
 #请求拦截器
 def interceptRequest(request:Request):
+    #由于这是单线程，请求一定是顺序的（响应不一定）
+    if request.method==INDICATE[0] and INDICATE[1] in request.url:
+        registerDict[request.id]=valuesStack[0]
+        del valuesStack[0]
     if DRIVER_REQUEST_INTERCEPT:
         import_function(DRIVER_REQUEST_INTERCEPT,"driver_request_intercept",request) #自定义拦截器
 
@@ -93,6 +99,9 @@ def interceptExpire(request:Request,response:Response):
     if ".js" in request.url:
         del response.headers['Cache-Control']
         response.headers['Cache-Control']="public, max-age=31536000"
+    if request.method==INDICATE[0] and INDICATE[1] in request.url:
+        print("+--输入参数：{0},返回长度:{1}，状态：{2}".format(registerDict[request.id],len(response.body),response.status_code))
+        del registerDict[request.id]
     if DRIVER_RESPONSE_INTERCEPT:
         import_function(DRIVER_RESPONSE_INTERCEPT,"driver_response_intercept",request,response)
         
@@ -105,6 +114,7 @@ def identifyCode(): #验证码采用ddddocr 精度一般 胜在免费 免费的�
 
 #进行一次提交
 def submitOnce(_values:list): 
+    valuesStack.append(_values) 
     #获取页面
     if not DRIVER_GET_TARGET:
         drivermodules.driver_get_target(driver,TARGET)
@@ -121,15 +131,17 @@ def submitOnce(_values:list):
     else:
         import_function(DRIVER_SUBMIT_VALUE,"driver_submit_value")(driver,nKeys,KEYS_PATH,_values)
     #验证码处理
-    if isIdentify:
-        '{0}.value="";'.format(IDENTIFY_PATH[0])
-        driver.execute_script('{0}.value="{1}";'.format(IDENTIFY_PATH[0],identifyCode())) #获取验证码
+    if isIdentify: #获取验证码
+        if not DRIVER_IDENTIFY_VALUE:
+            drivermodules.driver_submit_value(driver,IDENTIFY_PATH[0],identifyCode())
+        else:
+            import_function(DRIVER_IDENTIFY_VALUE,"driver_identify_value")(driver,IDENTIFY_PATH[0],identifyCode()) 
     #提交数据
     if not DRIVER_SUBMIT_ENTER:
         drivermodules.driver_submit_enter(driver,SUBMIT_PATH)
-        sleep(1)
     else:
         import_function(DRIVER_SUBMIT_ENTER,"driver_submit_enter")(driver,SUBMIT_PATH)
+    sleep(DELAY)
         
 #递归函数        
 def rOvOr(key:int,result:list,f): 
@@ -143,10 +155,7 @@ def rOvOr(key:int,result:list,f):
             #添加自己的循环，然后传递给下一个列
             if key>=nKeys-1:
                 #传递到最后了，提交咯
-                try:
-                    f(_newresult)
-                except:
-                    continue #不能因为网络波动停止
+                f(_newresult)
             else:
                 rOvOr(key+1,_newresult,f)
 
@@ -173,6 +182,8 @@ if __name__=="__main__":
     os.makedirs(TEMP,777) #创建缓存目录    
     docr=ddddocr.DdddOcr(show_ad=False) #识别模块
     diction={} #参数字典
+    registerDict={} #越写越朴素（？） 存放参数与请求关系的字典 key为请求
+    valuesStack=[] #一个栈
     isIdentify=False #是否需要验证码
     nKeys=None #计数
     options=webdriver.ChromeOptions()
@@ -197,6 +208,7 @@ if __name__=="__main__":
             }
         }    
     driver=webdriver.Chrome(DRIVERPATH,chrome_options=options,seleniumwire_options=wireproxy)
+    driver.request_interceptor=interceptRequest
     driver.response_interceptor=interceptExpire  
     #处理下参数列表
     if len(KEYS_PATH)!=len(VALUES_PATH):

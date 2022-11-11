@@ -1,7 +1,6 @@
 from settings import *
 from seleniumwire.webdriver import Chrome #driver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.action_chains import ActionChains
 from seleniumwire.request import Request
 from seleniumwire.request import Response
 
@@ -11,7 +10,7 @@ def driver_get_target(driver:Chrome,target:str): #获取登陆页面的处理
 
 def driver_submit_value(driver:Chrome,nKeys:int,keys:list,values:list): #输入数据的处理
     for m in range(0,nKeys):
-        '{0}.value="";'.format(keys[m]) #清空先
+        #'{0}.value="";'.format(keys[m]) #清空先
         exel='{0}.value="{1}";'.format(keys[m],values[m])
         driver.execute_script(exel) #输入数据
     return
@@ -24,10 +23,13 @@ def driver_before_submit_value(values:list): #输入数据前的处理（这里�
     #Return List
     return values
 
+def driver_request_intercept(request:Request): #请求拦截器
+    return 
+
 def driver_response_intercept(request:Request,response:Response): #响应拦截器补充
     return
 
-def driver_log_intercept(driver:Chrome,values:list,writer): #输出编写器
+def driver_log_intercept(driver:Chrome,values:list,writer): #输出编写器 writer的类型是_csv._writer
     if len(INDICATE)!=2:
         print("特征值参数不完整！")
         exit(0)
@@ -38,7 +40,6 @@ def driver_log_intercept(driver:Chrome,values:list,writer): #输出编写器
     while(1):
         request=next(iter) #往下查询就对了
         response=request.response
-        print(request.method)
         if INDICATE[1] in request.url and INDICATE[0]==request.method:
             #识别出特征
             writer.writerow([str(len(response.body)),str(response.status_code),str(request.params)]+values)
@@ -48,3 +49,6 @@ def driver_log_intercept(driver:Chrome,values:list,writer): #输出编写器
 def driver_log_head_intercept(values:list,writer):
     writer.writerow(["响应长度","响应状态","请求参数"]+values)
     return 
+
+def driver_identify_value(driver:Chrome,path:str,code:str):
+    driver.execute_script('{0}.value="{1}";'.format(path,code))
