@@ -4,10 +4,6 @@ from settings import *
 from seleniumwire.webdriver import Chrome #driver
 from selenium.webdriver.common.by import By
 
-def driver_get_target(driver:Chrome,target:str): #获取登陆页面的处理
-    driver.get(target)
-    return 
-
 def driver_submit_value(driver:Chrome,nKeys:int,keys:list,values:list): #输入数据的处理
     for m in range(0,nKeys):
         driver.find_element(By.XPATH,keys[m]).clear()

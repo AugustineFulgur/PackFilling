@@ -20,7 +20,7 @@ sys.path.append(SCRIPT) #引入脚本路径
 
 #配置开始 1
 PROG='''
-WpFilling
+PackFilling
 Version 0.1.0
 1.这是做什么的？\n
 这是一个用于自动化处理表单填写的脚本，并带有基本的验证码识别功能，在应对WEBPACK时有奇效。\n

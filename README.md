@@ -33,7 +33,7 @@ DRIVER_RESPONSE_INTERCEPT="" #【响应拦截器】的插件，允许你在执�
 DRIVER_REQUEST_INTERCEPT="" #【请求拦截器】的插件，允许你在执行中捕获请求并在请求发出前对其进行修改
 DRIVER_LOG_INTERCEPT="" #【输出】的插件，允许你自定义输出CSV文件的编写
 DRIVER_LOG_HEAD_INTERCEPT="" #【输出行首】的插件，允许你自定义输出CSV文件的文件头
-DRIVER_IDENTIFY_VALUE="" #【提交验证码】的插件
+DRIVER_IDENTIFY_VALUE="" #【输入验证码】的插件
 
 #以下存放输入值 etc.输入框元素的XPATH/JSPATH 默认状态下以下所有PATH为JSPATH
 #元素的JSPATH可以在浏览器中点击检查元素->copy->copy jspath获得
@@ -45,7 +45,7 @@ SUBMIT_PATH='' #发起提交的元素JSPATH
 SLEEP_INDICATE_PATH='' #等待的指示元素的XPATH，脚本将在此元素被加载之后执行再进行填写与提交
 
 #存放其他设置
-PROXY="" #代理
+PROXY="" #代理，可以挂bp的代理然后筛选关键词查看具体的请求
 TARGET="" #目标路径
 OUTFILE="out.csv" #输出文件路径
 SLEEP_TIME=10 #最长等待时间，建议设置得比较长
@@ -54,9 +54,18 @@ INDICATE=['POST',''] #需要记录的请求包的特征值，默认情况下请�
 
 #其他选项
 EAGER=False #交互式加载，有验证码的时候建议关了
-HEADLESS=False #无头 看不到运行过程
+HEADLESS=False #无头 无窗口化运行
 ```
 
+以下为一个简单的配置例子：
+[Demo](/demo/demo.html)
+若要爆破此表单，则应依次获得输入框及验证码图片的path，以及提交按钮的path，并拦截一次请求提交的包，获取其请求方式与URL。path的获取方式如下图所示：
+![复制path](/demo/1.png)
+复制后，将用户名与密码的jspath填入KEYS_PATH中，验证码输入框的jspath与验证码图片的**Xpath**依次填入IDENTIFY_PATH中。
+然后，将对应输入框的字典文件路径或单个值填入VALUES_PATH。它的顺序与KEYS_PATH中的输入框顺序相同。若其中包含单个值，则需要在VALUES_TYPE中指明。
+然后，将提交按钮的path输入SUBMIT_PATH，将URL输入TARGET。
+最后，在INDICATE项中填入[提交的请求方法，提交的路径]，即完成设置。
+设置完毕的文件如下[Settings_demo](/demo/settings_demo.py)
 
 ### 3.依赖相关
 本脚本采用chromedriver驱动chrome浏览器，若需要更换浏览器版本，请确保下载的chromedriver与chrome的版本相适配。
@@ -71,7 +80,7 @@ HEADLESS=False #无头 看不到运行过程
 - 【请求拦截器】
 - 【输出】
 - 【输出行首】
-- 【提交验证码】
+- 【输入验证码】
 
 插件本质上为一个py文件，其中与设置项中的插件设置名同名小写的函数即为对应步骤的插件。
 
