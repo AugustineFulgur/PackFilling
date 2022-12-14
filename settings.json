@@ -1,0 +1,56 @@
+//单个设置文件 配置好后请使用-run选项运行
+
+//在这里编辑爆破过程中的插件 如果还有没写到的，可以直接修改driver文件中的 **submitOnce** 函数
+//模块为一个python函数 func(driver:ChromeDriver,input:str,value:str)，其具体输出输出请参照drivermodules下的同名小写函数
+
+{
+    //插件
+    "DRIVER_INITAL":"", //初始化的插件
+    "DRIVER_GET_TARGET":"", //获取爆破页面的插件
+    "DRIVER_BEFORE_SUBMIT_VALUE":"", //提交数据前的处理
+    "DRIVER_SUBMIT_VALUE":"", //替代填写数据的插件
+    "DRIVER_SUBMIT_ENTER":"", //替代发起提交的插件
+    "DRIVER_IDENTIFY_VALUE":"", //代替填写验证码的插件
+    //请求/响应拦截器
+    "DRIVER_RESPONSE_INTERCEPT":"",  //响应拦截器
+    "DRIVER_REQUEST_INTERCEPT":"", //请求拦截器
+    //输出文件自定义
+    "DRIVER_LOG_INTERCEPT":"", //替代输出编写器
+    "DRIVER_LOG_HEAD_INTERCEPT":"", //替代输出行首编写器
+    
+    //路径与值
+    "KEYS_PATH":[
+
+    ], //需要爆破的输入框的（默认状况下是，下同）jsPath，可输入多个
+    "VALUES_PATH":[
+
+    ], //对应的值，可为单个值或字典名
+    "VALUES_TYPE":"", //传入参数的类型拼接成的二进制，与传入的key一一对应，若为1则value值视为字典名，若不使用此项则视为所有值都为字典名，etc.value=[a,b.txt]，type="01"
+    "IDENTIFY_PATH":[
+
+    ], //若需要识别验证码请使用此选项（不需要请置空）。传入[验证码输入框的jsPath,验证码图片的xpath]
+    "SUBMIT_PATH":"", //发起提交的元素jspath
+    "SLEEP_INDICATE_PATH":"", //等待的指示元素的XPATH，工具将在此元素被加载之后执行下一步，一般可以填写验证码图片的XPATH
+
+    //其他设置
+    "PROXY":{
+
+    }, //代理，为协议->地址的字典，例如{"http":"http://127.0.0.1:8080"}
+    "MODE":"", //P 音叉模式 即使用所有字典对所有目标同时爆破 C或不填 默认模式 使用字典进行遍历交叉爆破
+    "TARGET":"", //目标路径
+    "OUTFILE":"", //输出文件路径
+    "SLEEP_TIME":10, //指示元素加载完毕之前的最长等待时间
+    "DELAY":0, //请求提交后的延迟时间
+    "INDICATE":[
+        "POST",
+        ""
+     ], //需要记录的请求包的特征值，默认情况下请填写[请求方法,请求URL关键词]
+    "EAGER":false, //交互式加载，开启时会提升加载速度，有验证码的时候建议关了
+    "HEADLESS":false, //无头模式
+    
+    //扩展设置（插件用）
+    "EXTRA":{
+
+    } 
+
+}

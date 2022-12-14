@@ -3,6 +3,7 @@ from seleniumwire.webdriver import Chrome #driver
 from selenium.webdriver.common.by import By
 from seleniumwire.request import Request
 from seleniumwire.request import Response
+import ddddocr #验证码识别模块
 
 def driver_get_target(driver:Chrome,target:str): #获取登陆页面的处理
     driver.get(target)
@@ -46,9 +47,17 @@ def driver_log_intercept(driver:Chrome,values:list,writer): #输出编写器 wri
             break
     return 
 
-def driver_log_head_intercept(values:list,writer):
+def driver_log_head_intercept(values:list,writer): #输出CSV的头部编写器
     writer.writerow(["响应长度","响应状态","请求参数"]+values)
     return 
 
-def driver_identify_value(driver:Chrome,path:str,code:str):
-    driver.execute_script('{0}.value="{1}";'.format(path,code))
+def driver_identify_value(driver:Chrome,path:str,img_path:str,extra): #验证码填写器 #extra可为任意对象
+    #验证码采用ddddocr 精度一般 胜在免费 免费的东西就是好东西
+    #由于ddddocr识别的图片为二进制，需要先把浏览器的验证码图片down下来，而验证码图片也有两种，一种为真正的图片，另一种为base64的图片内容，所以采用简单粗暴的方式：直接截个图
+    driver.execute_script('{0}.value="{1}";'.format(path,str(extra.classification(driver.find_element(By.XPATH,img_path[1]).screenshot_as_png))))
+
+def driver_inital(): #初始化
+    #这样一说，弱类型也挺方便的
+    dic={}
+    dic["ocr"]=ddddocr.DdddOcr(show_ad=False) #识别模块]
+    return dic #返回一个dict，作为初始化的结果
