@@ -54,7 +54,7 @@ def driver_log_head_intercept(values:list,writer,extra:dict={},extra_conf:dict={
 def driver_identify_value(driver:Chrome,path:str,img_path:str,extra:dict={},extra_conf:dict={}): #验证码填写器 #extra可为任意对象
     #验证码采用ddddocr 精度一般 胜在免费 免费的东西就是好东西
     #由于ddddocr识别的图片为二进制，需要先把浏览器的验证码图片down下来，而验证码图片也有两种，一种为真正的图片，另一种为base64的图片内容，所以采用简单粗暴的方式：直接截个图
-    driver.execute_script('{0}.value="{1}";'.format(path,str(extra.classification(driver.find_element(By.XPATH,img_path[1]).screenshot_as_png))))
+    driver.execute_script('{0}.value="{1}";'.format(path,str(extra["ocr"].classification(driver.find_element(By.XPATH,img_path).screenshot_as_png))))
 
 def driver_inital(extra_conf:dict={}): #初始化
     #这样一说，弱类型也挺方便的
