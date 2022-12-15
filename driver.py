@@ -80,7 +80,7 @@ def interceptRequest(request:Request):
         registerDict[request.id]=valuesStack[0]
         del valuesStack[0]
     if CONF['DRIVER_REQUEST_INTERCEPT']:
-        import_function(CONF['DRIVER_REQUEST_INTERCEPT'],"driver_request_intercept",request) #自定义拦截器
+        import_function(CONF['DRIVER_REQUEST_INTERCEPT'],"driver_request_intercept",request,extra,extra_conf) #自定义拦截器
 
 #响应拦截器        
 def interceptExpire(request:Request,response:Response):
@@ -92,7 +92,7 @@ def interceptExpire(request:Request,response:Response):
         print("+--输入参数：{0},返回长度:{1}，状态：{2}".format(registerDict[request.id],len(response.body),response.status_code))
         del registerDict[request.id]
     if CONF['DRIVER_RESPONSE_INTERCEPT']:
-        import_function(CONF['DRIVER_RESPONSE_INTERCEPT'],"driver_response_intercept",request,response) 
+        import_function(CONF['DRIVER_RESPONSE_INTERCEPT'],"driver_response_intercept",request,response,extra,extra_conf) 
 
 #进行一次提交
 def submitOnce(_values:list): 
@@ -101,28 +101,28 @@ def submitOnce(_values:list):
     if not CONF['DRIVER_GET_TARGET']:
         drivermodules.driver_get_target(driver,CONF['TARGET'])
     else:
-        import_function(CONF['DRIVER_GET_TARGET'],"driver_get_target")(driver,CONF['TARGET'])
+        import_function(CONF['DRIVER_GET_TARGET'],"driver_get_target")(driver,CONF['TARGET'],extra,extra_conf)
     if not not CONF['SLEEP_INDICATE_PATH']: #存在指示元素则等待其加载完毕
         WebDriverWait(driver,CONF['SLEEP_TIME'],0.5).until(expected_conditions.visibility_of_element_located((By.XPATH,CONF['SLEEP_INDICATE_PATH'])))
     #输入数据前的处理（主要是对数据的处理）
     if CONF['DRIVER_BEFORE_SUBMIT_VALUE']:
-        _values=import_function(CONF['DRIVER_BEFORE_SUBMIT_VALUE'],"driver_before_submit_value")(_values)
+        _values=import_function(CONF['DRIVER_BEFORE_SUBMIT_VALUE'],"driver_before_submit_value")(_values,extra,extra_conf)
     #输入数据
     if not CONF['DRIVER_SUBMIT_VALUE']:
         drivermodules.driver_submit_value(driver,nKeys,CONF['KEYS_PATH'],_values)
     else:
-        import_function(CONF['DRIVER_SUBMIT_VALUE'],"driver_submit_value")(driver,nKeys,CONF['KEYS_PATH'],_values)
+        import_function(CONF['DRIVER_SUBMIT_VALUE'],"driver_submit_value")(driver,nKeys,CONF['KEYS_PATH'],_values,extra,extra_conf)
     #验证码处理
     if isIdentify: #获取验证码
         if not CONF['DRIVER_IDENTIFY_VALUE']:
             drivermodules.driver_identify_value(driver,CONF['IDENTIFY_PATH'][0],CONF['IDENTIFY_PATH'][1],extra)
         else:
-            import_function(CONF['DRIVER_IDENTIFY_VALUE'],"driver_identify_value")(driver,CONF['IDENTIFY_PATH'][0],CONF['IDENTIFY_PATH'][1],extra) 
+            import_function(CONF['DRIVER_IDENTIFY_VALUE'],"driver_identify_value")(driver,CONF['IDENTIFY_PATH'][0],CONF['IDENTIFY_PATH'][1],extra,extra,extra_conf) 
     #提交数据
     if not CONF['DRIVER_SUBMIT_ENTER']:
         drivermodules.driver_submit_enter(driver,CONF['SUBMIT_PATH'])
     else:
-        import_function(CONF['DRIVER_SUBMIT_ENTER'],"driver_submit_enter")(driver,CONF['SUBMIT_PATH'])
+        import_function(CONF['DRIVER_SUBMIT_ENTER'],"driver_submit_enter")(driver,CONF['SUBMIT_PATH'],extra,extra_conf)
     sleep(CONF['DELAY'])
         
 #（交叉爆破的）递归函数        
@@ -162,7 +162,7 @@ def writeLog(values:list):
         if not CONF['DRIVER_LOG_INTERCEPT']:
             drivermodules.driver_log_intercept(driver,values,writer)
         else:
-            import_function(CONF['DRIVER_LOG_INTERCEPT'],"driver_log_intercept")(driver,values,writer)
+            import_function(CONF['DRIVER_LOG_INTERCEPT'],"driver_log_intercept")(driver,values,writer,extra,extra_conf)
     except:
         f.close() #中途报错也要关闭文件，否则之前的记录不会保存
     
@@ -174,11 +174,12 @@ if __name__=="__main__":
     parser.add_argument("-values",type=list)
     argv=parser.parse_args()
     CONF=commentjson.loads(open(argv.run,"r",encoding="utf-8").read()) #读取配置
+    extra_conf=CONF['EXTRA'] #配置里的额外内容
     extra={} #额外配置
     if not CONF['DRIVER_INITAL']:
         extra=drivermodules.driver_inital()
     else:
-        extra=import_function(CONF['DRIVER_INITAL'],"driver_inital")()
+        extra=import_function(CONF['DRIVER_INITAL'],"driver_inital")(extra_conf)
     diction={} #参数字典
     registerDict={} #越写越朴素（？） 存放参数与请求关系的字典 key为请求
     valuesStack=[] #一个栈
@@ -228,7 +229,7 @@ if __name__=="__main__":
         f=open(CONF['OUTFILE'],"w",newline='')
         writer=csv.writer(f) #如果需要输出，就打开文件
         if not CONF['DRIVER_LOG_HEAD_INTERCEPT']:
-            drivermodules.driver_log_head_intercept(CONF['KEYS_PATH'],writer)
+            drivermodules.driver_log_head_intercept(CONF['KEYS_PATH'],writer,extra,extra_conf)
     else: writer=None 
     if CONF['MODE']=="C" or not CONF['MODE']:
         #默认模式
