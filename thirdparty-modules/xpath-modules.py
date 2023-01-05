@@ -1,6 +1,5 @@
 #输入的XPATH版本
 
-from settings import *
 from seleniumwire.webdriver import Chrome #driver
 from selenium.webdriver.common.by import By
 
@@ -14,7 +13,8 @@ def driver_submit_enter(driver:Chrome,enter:str,extra={},extra_conf={}): #提交
     driver.find_element(By.XPATH,enter).click() #点击下
     return
     
-def driver_identify_value(driver:Chrome,path:str,code:str,extra={},extra_conf={}):
+def driver_identify_value(driver:Chrome,path:str,img_path:str,extra={},extra_conf={}):
     driver.find_element(By.XPATH,path).clear()
-    driver.find_element(By.XPATH,path).send_keys(code)
+    dot=str(extra["ocr"].classification(driver.find_element(By.XPATH,img_path).screenshot_as_png))
+    driver.find_element(By.XPATH,path).send_keys(dot)
     return 

@@ -1,6 +1,5 @@
 #清除每次请求的cookie
 
-from settings import *
 from seleniumwire.request import Request
 from seleniumwire.webdriver import Chrome
 import drivermodules

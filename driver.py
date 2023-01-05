@@ -117,7 +117,7 @@ def submitOnce(_values:list):
         if not CONF['DRIVER_IDENTIFY_VALUE']:
             drivermodules.driver_identify_value(driver,CONF['IDENTIFY_PATH'][0],CONF['IDENTIFY_PATH'][1],extra)
         else:
-            import_function(CONF['DRIVER_IDENTIFY_VALUE'],"driver_identify_value")(driver,CONF['IDENTIFY_PATH'][0],CONF['IDENTIFY_PATH'][1],extra,extra,extra_conf) 
+            import_function(CONF['DRIVER_IDENTIFY_VALUE'],"driver_identify_value")(driver,CONF['IDENTIFY_PATH'][0],CONF['IDENTIFY_PATH'][1],extra,extra_conf) 
     #提交数据
     if not CONF['DRIVER_SUBMIT_ENTER']:
         drivermodules.driver_submit_enter(driver,CONF['SUBMIT_PATH'])
@@ -170,12 +170,14 @@ if __name__=="__main__":
     CONF={}
     #配置开始
     parser=argparse.ArgumentParser(description=DESCRIPTION)
-    parser.add_argument("-run",type=str,required=True)
-    parser.add_argument("-values",type=list)
+    parser.add_argument("-run",type=str,required=True,help="配置json文件的路径（包括后缀）")
+    parser.add_argument("-values",type=list,help="本次运行的额外配置，覆盖配置文件")
     argv=parser.parse_args()
     CONF=commentjson.loads(open(argv.run,"r",encoding="utf-8").read()) #读取配置
-    extra_conf=CONF['EXTRA'] #配置里的额外内容
-    extra={} #额外配置
+    extra_conf={}
+    if type(argv.values)==list:
+        extra_conf=CONF.update(argv.values) #配置里的额外内容
+    extra={} #插件中自设定的额外配置
     if not CONF['DRIVER_INITAL']:
         extra=drivermodules.driver_inital()
     else:
