@@ -192,6 +192,7 @@ if __name__=="__main__":
         options.page_load_strategy="eager" #交互式加载
     if CONF['HEADLESS']:
         options.add_argument("--headless") #无头模式
+    options.add_argument('disable-blink-features=AutomationControlled') #Anti-Anti-Spider
     options.add_argument('lang=zh_CN.UTF-8')
     options.binary_location=CHROMEPATH #一步到位了
     options.add_argument('ignore-certificate-errors')#关闭SSL证书验证

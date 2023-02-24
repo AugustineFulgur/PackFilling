@@ -1,5 +1,5 @@
 # **PackFilling**
-Version 0.3.0
+Version 0.3.4
 
 ## 安装与使用
 在使用之前，您需要：
@@ -54,6 +54,9 @@ Version 0.3.0
 
 除此之外，也有插件可以替代数个功能，例如[xpath-modules](/thirdparty-modules/xpath-modules.py)，这是因为这个插件文件内有数个函数。
 若要编写插件，请参考[drivermodules](drivermodules.py)中的函数及其输入输出，作为插件对应函数的输入输出。
+
+### 5.TIPS
+若使用XPATH模式填写路径，最好复制元素的*完整XPATH*，这样既没有烦人的双引号也不会导致WEBPACKER随机生成ID造成的填写失败
 
 ## 更新历史
 - **0.1.0** 开天辟地，基础功能完成
