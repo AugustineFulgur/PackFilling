@@ -165,13 +165,32 @@ def writeLog(values:list):
             import_function(CONF['DRIVER_LOG_INTERCEPT'],"driver_log_intercept")(driver,values,writer,extra,extra_conf)
     except:
         f.close() #中途报错也要关闭文件，否则之前的记录不会保存
+           
+class ChkVersionAction(argparse.Action):
     
+    def __init__(self, nargs=0,**kwargs):
+        super().__init__(nargs=nargs,**kwargs)
+    
+    def __call__(self,parser,namespace,values,option_name=None):
+        #比较两个文件的版本数字
+        import requests
+        with open("version","r") as v:
+            v1=float(v.read())
+            v2=float(requests.get("https://github.com/AugustineFulgur/PackFilling/blob/main/version").content.decode())
+        if v2>v1:
+            print("此版本并非最新版本。请访问https://github.com/AugustineFulgur/PackFilling进行更新。")
+        else:
+            print("最新版本，无需操作。")
+        exit(0) 
+            
+#MAIN    
 if __name__=="__main__":
     CONF={}
     #配置开始
     parser=argparse.ArgumentParser(description=DESCRIPTION)
-    parser.add_argument("-run",type=str,required=True,help="配置json文件的路径（包括后缀）")
+    parser.add_argument("-run",type=str,help="配置json文件的路径（包括后缀）")
     parser.add_argument("-values",type=list,help="本次运行的额外配置，覆盖配置文件")
+    parser.add_argument("-chv",nargs=0,action=ChkVersionAction,help="检查版本")
     argv=parser.parse_args()
     CONF=commentjson.loads(open(argv.run,"r",encoding="utf-8").read()) #读取配置
     extra_conf={}

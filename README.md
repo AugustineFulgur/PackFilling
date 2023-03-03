@@ -1,5 +1,7 @@
 # **PackFilling**
-Version 0.3.4
+version 0.3.4
+by AugustTheodor
+github https://github.com/AugustineFulgur/PackFilling
 
 ## 安装与使用
 在使用之前，您需要：
@@ -56,7 +58,8 @@ Version 0.3.4
 若要编写插件，请参考[drivermodules](drivermodules.py)中的函数及其输入输出，作为插件对应函数的输入输出。
 
 ### 5.TIPS
-若使用XPATH模式填写路径，最好复制元素的*完整XPATH*，这样既没有烦人的双引号也不会导致WEBPACKER随机生成ID造成的填写失败
+- 若使用XPATH模式填写路径，最好复制元素的*完整XPATH*，这样既没有烦人的双引号也不会导致WEBPACKER随机生成ID造成的填写失败
+- 若要与其他工具联动（如BP），最快的方式是————在配置中配置一个代理。
 
 ## 更新历史
 - **0.1.0** 开天辟地，基础功能完成
