@@ -17,7 +17,7 @@ sys.path.append(SCRIPT) #引入脚本路径
 
 #配置开始 1
 DESCRIPTION='''
-PackFilling Version 0.3.0
+PackFilling Version 0.4.1
 '''
 USAGE='''
 具体的使用方式请参考README.md
@@ -196,6 +196,8 @@ if __name__=="__main__":
     extra_conf={}
     if type(argv.values)==list:
         extra_conf=CONF.update(argv.values) #配置里的额外内容
+    else:
+        extra_conf=CONF
     extra={} #插件中自设定的额外配置
     if not CONF['DRIVER_INITAL']:
         extra=drivermodules.driver_inital()
